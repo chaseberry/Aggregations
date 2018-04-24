@@ -40,13 +40,15 @@ class Parser(val input: String) {
             except("Stage must start with '{'")
         }
 
-        if (getNextChar(false) == '}') {
-            //Empty Object: consume and return
-            getNextChar()
-            return
-        }
+        val pairs = ArrayList<Pair<String, Any?>>()
 
         while (true) {
+
+            if (getNextChar(false) == '}') {
+                //Object Done, consume and return
+                getNextChar()
+                return
+            }
 
             val key = getKey()
 
@@ -54,13 +56,16 @@ class Parser(val input: String) {
                 throw except("Must have a `:` after a key")
             }
 
+            val value = getValue()
+
+            pairs.add(key to value)
+
+            if (getNextChar() != ',') {
+                throw except("Need a comma after a key/value pair")
+            }//TODO dont require trailing comma
+
         }
 
-
-
-        if (getNextChar() != '}') {
-            except("Stage must end with '}'")
-        }
     }
 
     /**
