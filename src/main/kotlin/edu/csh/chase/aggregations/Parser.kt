@@ -27,7 +27,7 @@ class Parser(val input: String) {
             }
         }
 
-        if (getNextChar() != '[') {
+        if (getNextChar() != ']') {
             except("Pipeline must end with ']'")
         }
     }
@@ -40,7 +40,21 @@ class Parser(val input: String) {
             except("Stage must start with '{'")
         }
 
+        if (getNextChar(false) == '}') {
+            //Empty Object: consume and return
+            getNextChar()
+            return
+        }
 
+        while (true) {
+
+            val key = getKey()
+
+            if (getNextChar() != ':') {
+                throw except("Must have a `:` after a key")
+            }
+
+        }
 
 
 
@@ -66,7 +80,7 @@ class Parser(val input: String) {
         }
 
         while (true) {
-            val c = getNext(false) ?: return str.toString()
+            val c = getNext(false) ?: throw except("Unexpected End of String")
 
             if (!quoted && c == ':') { //The key is not quoted and we hit a colon
                 return str.toString()  //Return without consuming the ':'
@@ -75,7 +89,7 @@ class Parser(val input: String) {
             getNext()//The char wasn't a ':' so consume it
 
             if (c == '\n') {
-                except("Keys cannot contain newline")
+                throw except("Keys cannot contain newline")
             }
 
             if (quoted && c == '"') {//String is quoted and we hit closing '"' return what we got
@@ -107,7 +121,7 @@ class Parser(val input: String) {
             'b' -> '\b'
             'r' -> '\r'
             '\'' -> '\''
-            else -> except("Invalid escape char '\\$next'")
+            else -> throw except("Invalid escape char '\\$next'")
         }
     }
 
@@ -133,8 +147,8 @@ class Parser(val input: String) {
     private fun Char.isControl() = this == '{' || this == '}' || this == '[' || this == ']' || this == ':'
 
     @Throws
-    private fun except(msg: String) {
-        throw RuntimeException()
+    private fun except(msg: String): Exception {
+        return RuntimeException()
     }
 
 }
