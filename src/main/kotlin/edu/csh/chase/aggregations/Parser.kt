@@ -4,8 +4,8 @@ class Parser(val input: String) {
 
     private var index = 0
 
-    private var lineCount = 0
-    private var linePosition = 0
+    private var lineCount = 1
+    private var linePosition = 1
 
     fun parse(): Any? {
         return getValue()
@@ -55,7 +55,7 @@ class Parser(val input: String) {
 
             if (getNextChar(false) == '}') {
                 //Object Done, consume and return
-                getNextChar()
+                consume()
                 break
             }
 
@@ -125,7 +125,6 @@ class Parser(val input: String) {
     }
 
     private fun getValue(): Any? {
-
         return when (getNextChar(false)) {
             '[' -> return parseList()
             '{' -> return parseObject()
@@ -136,6 +135,7 @@ class Parser(val input: String) {
     }
 
     private fun getString(): String {
+        consume()
         return ""
     }
 
@@ -155,6 +155,10 @@ class Parser(val input: String) {
 
             if (char == ',' || char == ']' || char == '}') {
                 break
+            }
+
+            if (char == '"' || char == ':') {//Hit the next key (or even consumed it
+                throw except("Required comma after value")
             }
 
             s += char
@@ -188,18 +192,23 @@ class Parser(val input: String) {
 
             if (!c.isWhitespace() && !c.isISOControl()) {
                 return c
+            } else if (!consume) {
+                //no consume, but is whitespace. consume
+                consume()
             }
-            consume()
+
         } while (true)
     }
 
     private fun getNext(consume: Boolean = true): Char? {
         return input[index].also {
             linePosition += 1
+
             if (it == '\n') {
                 lineCount += 1
-                linePosition = 0
+                linePosition = 1
             }
+
             if (consume) {
                 index += 1
             }
@@ -214,7 +223,7 @@ class Parser(val input: String) {
 
     @Throws
     private fun except(msg: String): Exception {
-        return RuntimeException()
+        return RuntimeException("$msg: ($lineCount, $linePosition)")
     }
 
 }
