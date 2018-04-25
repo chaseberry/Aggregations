@@ -135,8 +135,29 @@ class Parser(val input: String) {
     }
 
     private fun getString(): String {
-        consume()
-        return ""
+        val str = StringBuilder()
+
+        val first = getNextChar()//Check if the key is quoted
+
+        if (first != '"') {
+            throw except("First char in a String must be '\"'")
+        }
+
+        while (true) {
+            val c = getNextChar() ?: throw except("Unexpected End of String")
+
+            if (c == '"') {
+                break
+            }
+
+            str += if (c == '\\') { //Hit a '\' Need to get the next char and figure out what to do
+                readEscaped()
+            } else {
+                c
+            }
+        }
+
+        return str.toString()
     }
 
     //numbers, boolean, null, isodate, objectId
@@ -201,7 +222,7 @@ class Parser(val input: String) {
     }
 
     private fun getNext(consume: Boolean = true): Char? {
-        return input[index].also {
+        return input.getOrNull(index).also {
             linePosition += 1
 
             if (it == '\n') {
