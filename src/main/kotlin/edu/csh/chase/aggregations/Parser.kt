@@ -5,39 +5,48 @@ class Parser(val input: String) {
     private var index = 0
 
     private var lineCount = 0
+    private var linePosition = 0
 
-    /**
-     * Parsers [ ({}(,)?)+ ]
-     */
-    fun parse() {
+    fun parse(): Any? {
+        return getValue()
+    }
+
+    private fun parseList(): List<Any?> {
         if (getNextChar() != '[') {
-            except("Pipeline must start with '['")
+            throw except("Pipeline must start with '['")
         }
+
+        val values = ArrayList<Any?>()
 
         while (true) {
-            if (getNextChar(false) != '{') {//Check start of stage, Don't comsume though, since parseStage will consume
+
+            if (getNextChar(false) == ']') {
+                consume()
                 break
             }
 
-            parseObject()
+            values.add(getValue())
 
-            if (getNextChar(false) != ',') { //Check if its a comma
-                getNextChar() //It is, consume the comma and break since we cannot have more stages
+            val next = getNextChar()
+
+            if (next == ']') {
                 break
+            }
+
+            if (next != ',') { //Check if its a comma
+                throw except("Required comma after value")
             }
         }
 
-        if (getNextChar() != ']') {
-            except("Pipeline must end with ']'")
-        }
+        return values
     }
 
     /**
      * Parses {}
      */
-    private fun parseObject() {
+    private fun parseObject(): Map<String, Any?> {
         if (getNextChar() != '{') {
-            except("Stage must start with '{'")
+            throw except("Stage must start with '{'")
         }
 
         val pairs = ArrayList<Pair<String, Any?>>()
@@ -47,7 +56,7 @@ class Parser(val input: String) {
             if (getNextChar(false) == '}') {
                 //Object Done, consume and return
                 getNextChar()
-                return
+                break
             }
 
             val key = getKey()
@@ -56,16 +65,22 @@ class Parser(val input: String) {
                 throw except("Must have a `:` after a key")
             }
 
-            val value = getValue()
+            pairs.add(key to getValue())
 
-            pairs.add(key to value)
+            val next = getNextChar()
 
-            if (getNextChar() != ',') {
+            if (next == '}') {
+                //Object done, no trailing comma
+                break
+            }
+
+            if (next != ',') {
                 throw except("Need a comma after a key/value pair")
             }//TODO dont require trailing comma
 
         }
 
+        return pairs.toMap()
     }
 
     /**
@@ -81,17 +96,17 @@ class Parser(val input: String) {
 
         if (first != '"') {
             quoted = false
-            str.append(first)
+            str += first
         }
 
         while (true) {
-            val c = getNext(false) ?: throw except("Unexpected End of String")
+            val c = getNextChar(false) ?: throw except("Unexpected End of String")
 
             if (!quoted && c == ':') { //The key is not quoted and we hit a colon
                 return str.toString()  //Return without consuming the ':'
             }
 
-            getNext()//The char wasn't a ':' so consume it
+            consume()//The char wasn't a ':' so consume it
 
             if (c == '\n') {
                 throw except("Keys cannot contain newline")
@@ -101,16 +116,53 @@ class Parser(val input: String) {
                 return str.toString()
             }
 
-            if (quoted && c == '\\') { //Hit a '\' Need to get the next char and figure out what to do
-                str.append(readEscaped())
+            str += if (quoted && c == '\\') { //Hit a '\' Need to get the next char and figure out what to do
+                readEscaped()
             } else {
-                str.append(c)
+                c
             }
         }
     }
 
     private fun getValue(): Any? {
 
+        return when (getNextChar(false)) {
+            '[' -> return parseList()
+            '{' -> return parseObject()
+            '"' -> return getString()
+            else -> getRaw()
+        }
+
+    }
+
+    private fun getString(): String {
+        return ""
+    }
+
+    //numbers, boolean, null, isodate, objectId
+    private fun getRaw(): Any? {
+        //Read until an escape char (']','}',',')
+
+        val s = StringBuilder()
+
+        while (true) {
+            val char = getNextChar(false)
+
+            if (char == '"') {//The raw value contains a '"' eg ObjectId("")
+                s += getString()
+                continue
+            }
+
+            if (char == ',' || char == ']' || char == '}') {
+                break
+            }
+
+            s += char
+
+            consume()
+        }
+
+        return s.toString()
     }
 
     /**
@@ -137,16 +189,25 @@ class Parser(val input: String) {
             if (!c.isWhitespace() && !c.isISOControl()) {
                 return c
             }
-
+            consume()
         } while (true)
     }
 
     private fun getNext(consume: Boolean = true): Char? {
         return input[index].also {
+            linePosition += 1
+            if (it == '\n') {
+                lineCount += 1
+                linePosition = 0
+            }
             if (consume) {
                 index += 1
             }
         }
+    }
+
+    private fun consume() {
+        index += 1
     }
 
     private fun Char.isControl() = this == '{' || this == '}' || this == '[' || this == ']' || this == ':'
