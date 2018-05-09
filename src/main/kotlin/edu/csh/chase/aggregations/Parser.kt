@@ -92,17 +92,14 @@ class Parser(val input: String) {
 
         val first = getNextChar()//Check if the key is quoted
 
-        var quoted = true
-
-        if (first != '"') {
-            quoted = false
-            str += first
+        if (first == '"') {
+            return getString()
         }
 
         while (true) {
             val c = getNextChar(false) ?: throw except("Unexpected End of String")
 
-            if (!quoted && c == ':') { //The key is not quoted and we hit a colon
+            if (c == ':') { //The key is not quoted and we hit a colon
                 return str.toString()  //Return without consuming the ':'
             }
 
@@ -112,15 +109,7 @@ class Parser(val input: String) {
                 throw except("Keys cannot contain newline")
             }
 
-            if (quoted && c == '"') {//String is quoted and we hit closing '"' return what we got
-                return str.toString()
-            }
-
-            str += if (quoted && c == '\\') { //Hit a '\' Need to get the next char and figure out what to do
-                readEscaped()
-            } else {
-                c
-            }
+            str += c
         }
     }
 
