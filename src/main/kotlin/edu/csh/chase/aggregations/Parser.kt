@@ -1,5 +1,9 @@
 package edu.csh.chase.aggregations
 
+import org.bson.types.ObjectId
+import java.time.Instant
+import java.util.*
+
 class Parser(val input: String) {
 
     private var index = 0
@@ -90,7 +94,7 @@ class Parser(val input: String) {
     private fun getKey(): String {
         val str = StringBuilder()
 
-        val first = getNextChar()//Check if the key is quoted
+        val first = getNextChar(false)//Check if the key is quoted
 
         if (first == '"') {
             return getString()
@@ -176,7 +180,23 @@ class Parser(val input: String) {
             consume()
         }
 
-        return s.toString()
+        val v = s.toString()
+
+        Regex("^ObjectId\\((.*)\\)\$").matchEntire(v)?.let {
+            return ObjectId(it.groupValues[1])
+        }
+
+        Regex("^ISODate\\((.*)\\)\$").matchEntire(v)?.let {
+            return Date.from(Instant.parse(it.groupValues[1]))
+        }
+
+        Regex("^\\/(.*)\\/\$").matchEntire(v)?.let {
+            return Regex(it.groupValues[1])
+        }
+
+        //TODO numbers
+
+        return v
     }
 
     /**
