@@ -7,4 +7,5 @@ class Project(val document: Document) {
 
     constructor(vararg pairs: Pair<String, Any?>) : this(doc(*pairs))
 
+    constructor(map: Map<String, Any?>) : this(Document(map))
 }
