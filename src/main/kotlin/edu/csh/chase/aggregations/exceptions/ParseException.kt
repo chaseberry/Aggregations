@@ -1,4 +1,4 @@
 package edu.csh.chase.aggregations.exceptions
 
-abstract class ParseException : Exception() {
+abstract class ParseException(msg: String) : Exception(msg) {
 }

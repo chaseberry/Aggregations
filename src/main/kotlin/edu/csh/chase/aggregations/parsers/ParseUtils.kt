@@ -4,7 +4,7 @@ import edu.csh.chase.aggregations.exceptions.ValueException
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
-fun <K, V> Map<K, V>.nonNull(key: K) = get(key) ?: throw ValueException(key.toString(), "null", null)
+fun <K, V> Map<K, V>.nonNull(key: K) = get(key) ?: throw ValueException(key.toString(), "not-null", null)
 
 
 fun <K, V> Map<K, V>.boolean(key: K): Boolean = key.toString() to nonNull(key) assertType Boolean::class

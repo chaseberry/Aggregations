@@ -16,7 +16,10 @@ class StageParser(val input: Map<String, Any?>) {
 
         return when (stageName) {
             "\$match" -> parseMatchStage()
-            else -> throw error("Unknown Stage $stageName")
+            "\$project" -> parseProjectStage()
+            "\$lookup" -> parseLookupStage()
+            "\$unwind" -> parseUnwind()
+            else -> throw StageParsingException.UnknownStage(stageName)
         }
     }
 
@@ -34,17 +37,15 @@ class StageParser(val input: Map<String, Any?>) {
         return Project(map)
     }
 
-    private fun parseUnwind(): Unwind {
-        val map = getMap("\$unwind")
-
-        return try {
+    private fun parseUnwind(): Unwind = with(getMap("\$unwind")) {
+        try {
             Unwind(
-                path = map.string("path"),
-                includeArrayIndex = map.opString("includeArrayIndex"),
-                preserveNullAndEmptyArrays = map.opBoolean("preserveNullAndEmptyArrays") ?: false
+                path = string("path"),
+                includeArrayIndex = opString("includeArrayIndex"),
+                preserveNullAndEmptyArrays = opBoolean("preserveNullAndEmptyArrays") ?: false
             )
         } catch (e: ValueException) {
-            throw error()
+            throw error("\$unwind", e)
         }
     }
 
@@ -66,7 +67,7 @@ class StageParser(val input: Map<String, Any?>) {
                 `as` = map.string("as")
             )
         } catch (e: ValueException) {
-            throw error()
+            throw error("\$lookup", e)
         }
     }
 
@@ -79,7 +80,7 @@ class StageParser(val input: Map<String, Any?>) {
                 `as` = map.string("as")
             )
         } catch (e: ValueException) {
-            throw error()
+            throw error("\$lookup", e)
         }
     }
 
@@ -91,6 +92,14 @@ class StageParser(val input: Map<String, Any?>) {
             is Document -> doc
             is Map<*, *> -> doc.mapKeys { it.key.toString() }
             else -> throw error("Value of a stage stage must be an Object")
+        }
+    }
+
+    private fun error(stage: String, e: ValueException): StageParsingException {
+        return if (e.got == null) {
+            StageParsingException.MissingRequiredValue(e.field, stage)
+        } else {
+            StageParsingException.WrongType(e.field, e.expected, e.got, stage)
         }
     }
 
