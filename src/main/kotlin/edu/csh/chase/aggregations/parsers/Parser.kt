@@ -157,7 +157,7 @@ class Parser(val input: String) {
 
     //numbers, boolean, null, isodate, objectId
     private fun getRaw(): Any? {
-        //Read until an escape char (']','}',',')
+        //Read until an escape char ( ']' , '}' , ',' )
 
         val s = StringBuilder()
 
