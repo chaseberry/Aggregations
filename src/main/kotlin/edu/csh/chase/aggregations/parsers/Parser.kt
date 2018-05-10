@@ -1,5 +1,7 @@
-package edu.csh.chase.aggregations
+package edu.csh.chase.aggregations.parsers
 
+import edu.csh.chase.aggregations.plusAssign
+import edu.csh.chase.aggregations.toMap
 import org.bson.types.ObjectId
 import java.time.Instant
 import java.util.*
