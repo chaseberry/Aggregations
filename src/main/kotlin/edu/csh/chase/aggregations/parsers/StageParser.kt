@@ -1,5 +1,6 @@
 package edu.csh.chase.aggregations.parsers
 
+import edu.csh.chase.aggregations.Pipeline
 import edu.csh.chase.aggregations.exceptions.StageParsingException
 import edu.csh.chase.aggregations.exceptions.ValueException
 import edu.csh.chase.aggregations.stages.*
@@ -18,7 +19,8 @@ class StageParser(val input: Map<String, Any?>) {
             "\$match" -> parseMatchStage()
             "\$project" -> parseProjectStage()
             "\$lookup" -> parseLookupStage()
-            "\$unwind" -> parseUnwind()
+            "\$unwind" -> parseUnwindStage()
+            "\$group" -> parseGroupStage()
             else -> throw StageParsingException.UnknownStage(stageName)
         }
     }
@@ -37,15 +39,26 @@ class StageParser(val input: Map<String, Any?>) {
         return Project(map)
     }
 
-    private fun parseUnwind(): Unwind = with(getMap("\$unwind")) {
+    private fun parseUnwindStage(): Unwind = with(getMap("\$unwind")) {
         try {
             Unwind(
                 path = string("path"),
                 includeArrayIndex = opString("includeArrayIndex"),
-                preserveNullAndEmptyArrays = opBoolean("preserveNullAndEmptyArrays") ?: false
+                preserveNullAndEmptyArrays = opBoolean("preserveNullAndEmptyArrays")
             )
         } catch (e: ValueException) {
             throw error("\$unwind", e)
+        }
+    }
+
+    private fun parseGroupStage(): Group = with(getMap("\$group")) {
+        try {
+            Group(
+                _id = get("_id"),
+                fields = Document(this - "_id")
+            )
+        } catch (e: ValueException) {
+            throw error("\$group", e)
         }
     }
 
@@ -62,8 +75,11 @@ class StageParser(val input: Map<String, Any?>) {
     private fun parsePipelineLookup(map: Map<String, Any?>): PipelineLookup {
         return try {
             PipelineLookup(
-                let =,
-                pipeline =,
+                let = map.opDoc("let"),
+                pipeline = Pipeline(
+                    collection = map.string("from"),
+                    stages = 
+                ),
                 `as` = map.string("as")
             )
         } catch (e: ValueException) {
@@ -88,10 +104,10 @@ class StageParser(val input: Map<String, Any?>) {
         val doc = input[stage]
 
         return when (doc) {
-            null -> throw error("Value of a stage stage cannot be null")
+            null -> throw StageParsingException.MissingRequiredValue(stage, stage)
             is Document -> doc
             is Map<*, *> -> doc.mapKeys { it.key.toString() }
-            else -> throw error("Value of a stage stage must be an Object")
+            else -> throw StageParsingException.WrongType(stage, "", doc, stage)
         }
     }
 
@@ -101,10 +117,6 @@ class StageParser(val input: Map<String, Any?>) {
         } else {
             StageParsingException.WrongType(e.field, e.expected, e.got, stage)
         }
-    }
-
-    private fun error(msg: String): StageParsingException {
-        return StageParsingException()
     }
 
 }
