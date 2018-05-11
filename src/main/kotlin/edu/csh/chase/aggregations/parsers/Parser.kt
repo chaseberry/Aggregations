@@ -121,9 +121,10 @@ class Parser(val input: String) {
 
     private fun getValue(): Any? {
         return when (getNextChar(false)) {
-            '[' -> return parseList()
-            '{' -> return parseObject()
-            '"' -> return getString()
+            '[' -> parseList()
+            '{' -> parseObject()
+            '"' -> getString()
+            '.', '-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> getNumber()
             else -> getRaw()
         }
 
@@ -155,6 +156,75 @@ class Parser(val input: String) {
         return str.toString()
     }
 
+    private fun getNumber(): Number {
+        //Read until an escape char ( ']' , '}' , ',' )
+
+        var hasDecimal = false
+
+        var hasExponent = false
+
+        var first = true
+
+        val s = StringBuilder()
+
+        while (true) {
+            val char = getNextChar(false) ?: break
+
+            if (char == ',' || char == ']' || char == '}') {
+                break
+            }
+
+            if (char == '"' || char == ':') {//Hit the next key (or even consumed it
+                throw except("Required comma after value")
+            }
+
+            if (first && (char == '-' || char == '+')) {
+                first = false
+
+                if (char == '-') {
+                    s += '-'
+                }
+
+                consume()
+                continue
+            }
+
+            first = false
+
+            when (char) {
+                '.' -> {
+                    if (hasDecimal) {
+                        throw except("Numbers cannot have two '.'s")
+                    }
+                    hasDecimal = true
+                    s += '.'
+                }
+                'e', 'E' -> {
+                    if (hasExponent) {
+                        throw except("Numbers cannot have two 'e's")
+                    }
+                    hasExponent = true
+                    s += 'e'
+                }
+                else -> s += char.takeIf { it.isDigit() } ?: throw except("Numbers cannot have letters in them")
+            }
+
+            consume()
+        }
+
+        val built = s.toString()
+
+        return if (hasDecimal || hasExponent) {
+            built.toDouble()
+        } else {
+            try {
+                built.toInt()
+            } catch (e: NumberFormatException) {
+                built.toLong()
+            } as Number//Not sure why I need to cast, but I do
+        }
+    }
+
     //numbers, boolean, null, isodate, objectId
     private fun getRaw(): Any? {
         //Read until an escape char ( ']' , '}' , ',' )
@@ -162,7 +232,7 @@ class Parser(val input: String) {
         val s = StringBuilder()
 
         while (true) {
-            val char = getNextChar(false)
+            val char = getNextChar(false) ?: break
 
             if (char == '"') {//The raw value contains a '"' eg ObjectId("")
                 s += getString()
@@ -196,9 +266,12 @@ class Parser(val input: String) {
             return Regex(it.groupValues[1])
         }
 
-        //TODO numbers
-
-        return v
+        return when (v) {
+            "null" -> null
+            "true" -> true
+            "false" -> false
+            else -> v
+        }
     }
 
     /**
