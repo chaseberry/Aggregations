@@ -255,7 +255,11 @@ class Parser(val input: String) {
         val v = s.toString()
 
         Regex("^ObjectId\\((.*)\\)\$").matchEntire(v)?.let {
-            return ObjectId(it.groupValues[1])
+            return try {
+                ObjectId(it.groupValues[1])
+            } catch (e: IllegalArgumentException) {
+                throw except(e.toString())
+            }
         }
 
         Regex("^ISODate\\((.*)\\)\$").matchEntire(v)?.let {
