@@ -20,6 +20,24 @@ fun <K, V> Map<K, V>.opString(key: K): String? = get(key)?.let {
 }
 
 
+fun <K, V> Map<K, V>.list(key: K): List<*> = (key.toString() to nonNull(key)).let {
+    val m = it.second
+    when (m) {
+        is List<*> -> m
+        is Array<*> -> m.toList()
+        else -> throw ValueException(it.first, "list", m)
+    }
+}
+
+fun <K, V> Map<K, V>.opList(key: K): List<*>? = get(key)?.let {
+    when (it) {
+        is List<*> -> it
+        is Array<*> -> it.toList()
+        else -> throw ValueException(key.toString(), "list", it)
+    }
+}
+
+
 fun <K, V> Map<K, V>.doc(key: K): Document = (key.toString() to nonNull(key)).let {
     val m = it.second
     when (m) {

@@ -1,6 +1,6 @@
 package edu.csh.chase.aggregations.parsers
 
-import edu.csh.chase.aggregations.Pipeline
+import edu.csh.chase.aggregations.exceptions.PipelineParsingException
 import edu.csh.chase.aggregations.exceptions.StageParsingException
 import edu.csh.chase.aggregations.exceptions.ValueException
 import edu.csh.chase.aggregations.stages.*
@@ -21,6 +21,7 @@ class StageParser(val input: Map<String, Any?>) {
             "\$lookup" -> parseLookupStage()
             "\$unwind" -> parseUnwindStage()
             "\$group" -> parseGroupStage()
+            "\$count" -> parseCountStage()
             else -> throw StageParsingException.UnknownStage(stageName)
         }
     }
@@ -51,6 +52,8 @@ class StageParser(val input: Map<String, Any?>) {
         }
     }
 
+    private fun parseCountStage(): Count = Count(input.string("\$count"))
+
     private fun parseGroupStage(): Group = with(getMap("\$group")) {
         try {
             Group(
@@ -76,14 +79,13 @@ class StageParser(val input: Map<String, Any?>) {
         return try {
             PipelineLookup(
                 let = map.opDoc("let"),
-                pipeline = Pipeline(
-                    collection = map.string("from"),
-                    stages = 
-                ),
+                pipeline = PipelineParser(map.string("from"), map.list("pipeline")).parse(),
                 `as` = map.string("as")
             )
         } catch (e: ValueException) {
             throw error("\$lookup", e)
+        } catch (e: PipelineParsingException) {
+            throw StageParsingException.Subpipeline(e, "\$lookup")
         }
     }
 
