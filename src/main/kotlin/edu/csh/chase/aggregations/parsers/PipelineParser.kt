@@ -6,7 +6,7 @@ import edu.csh.chase.aggregations.exceptions.StageParsingException
 import edu.csh.chase.aggregations.exceptions.ValueException
 import org.bson.Document
 
-class PipelineParser(val collection: String, val input: List<*>) {
+class PipelineParser(val input: List<*>) {
 
     fun parse(): Pipeline {
 
@@ -34,7 +34,7 @@ class PipelineParser(val collection: String, val input: List<*>) {
             throw PipelineParsingException(issues)
         }
 
-        return Pipeline(collection, results)
+        return Pipeline(results)
     }
 
 

@@ -62,7 +62,7 @@ class StageParser(val input: Map<String, Any?>) {
         try {
             Facet(
                 this.mapValues {
-                    PipelineParser("", list(it.key)).parse()
+                    PipelineParser(list(it.key)).parse()
                 }
             )
         } catch (e: PipelineParsingException) {
@@ -114,8 +114,9 @@ class StageParser(val input: Map<String, Any?>) {
     private fun parsePipelineLookup(map: Map<String, Any?>): PipelineLookup {
         return try {
             PipelineLookup(
+                from = map.string("from"),
                 let = map.opDoc("let"),
-                pipeline = PipelineParser(map.string("from"), map.list("pipeline")).parse(),
+                pipeline = PipelineParser(map.list("pipeline")).parse(),
                 `as` = map.string("as")
             )
         } catch (e: PipelineParsingException) {
@@ -123,7 +124,7 @@ class StageParser(val input: Map<String, Any?>) {
         }
     }
 
-    private fun parseBasicLookup(map: Map<String, Any?>) = BasicLookup(
+    private fun parseBasicLookup(map: Map<String, Any?>) = Lookup(
         from = map.string("from"),
         localField = map.string("localField"),
         foreignField = map.string("foreignField"),
