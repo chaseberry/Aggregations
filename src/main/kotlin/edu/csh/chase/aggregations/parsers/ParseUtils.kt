@@ -14,6 +14,12 @@ fun <K, V> Map<K, V>.opBoolean(key: K): Boolean? = get(key)?.let {
 }
 
 
+fun <K, V> Map<K, V>.int(key: K): Int = key.toString() to nonNull(key) assertType Int::class
+fun <K, V> Map<K, V>.opInt(key: K): Int? = get(key)?.let {
+    key.toString() to it assertType Int::class
+}
+
+
 fun <K, V> Map<K, V>.string(key: K): String = key.toString() to nonNull(key) assertType String::class
 fun <K, V> Map<K, V>.opString(key: K): String? = get(key)?.let {
     key.toString() to it assertType String::class
