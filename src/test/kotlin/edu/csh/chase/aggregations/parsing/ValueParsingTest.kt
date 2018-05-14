@@ -41,6 +41,7 @@ class ValueParsingTest {
     @Test
     fun parseString() {
         assertEquals("", "\"\"".parse())
+        assertEquals("    ", "\"    \"".parse())
         assertEquals("\"", "\"\\\"\"".parse())
         assertEquals("Hello World!", "\"Hello World!\"".parse())
         assertEquals("\n\r\t", "\"\\n\\r\\t\"".parse())

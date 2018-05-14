@@ -127,7 +127,6 @@ class Parser(val input: String) {
             '.', '-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> getNumber()
             else -> getRaw()
         }
-
     }
 
     private fun getString(): String {
