@@ -28,4 +28,22 @@ class ValueParsingTest {
         assertEquals(-12, "-12".parse())
     }
 
+    @Test
+    fun parseDouble() {
+        assertEquals(0.0, "0.".parse())
+        assertEquals(0.0, ".0".parse())
+        assertEquals(14.134, "14.134".parse())
+        assertEquals(173.99, "+173.99".parse())
+        assertEquals(-1.2, "-1.2".parse())
+        assertEquals(1000.0, "1E3".parse())
+    }
+
+    @Test
+    fun parseString() {
+        assertEquals("", "\"\"".parse())
+        assertEquals("\"", "\"\\\"\"".parse())
+        assertEquals("Hello World!", "\"Hello World!\"".parse())
+        assertEquals("\n\r\t", "\"\\n\\r\\t\"".parse())
+    }
+
 }

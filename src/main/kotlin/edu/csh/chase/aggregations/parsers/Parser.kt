@@ -140,7 +140,7 @@ class Parser(val input: String) {
         }
 
         while (true) {
-            val c = getNextChar() ?: throw except("Unexpected End of String")
+            val c = getNext() ?: throw except("Unexpected End of String")
 
             if (c == '"') {
                 break
@@ -232,7 +232,7 @@ class Parser(val input: String) {
         val s = StringBuilder()
 
         while (true) {
-            val char = getNextChar(false) ?: break
+            val char = getNext(false) ?: break
 
             if (char == '"') {//The raw value contains a '"' eg ObjectId("")
                 s += getString()
