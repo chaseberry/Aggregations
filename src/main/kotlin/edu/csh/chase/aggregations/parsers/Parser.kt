@@ -119,6 +119,10 @@ class Parser(val input: String) {
                 throw except("Keys cannot contain newline")
             }
 
+            if(c.isControl()){
+                throw except("Unquoted keys must terminate with a ':'")
+            }
+
             str += c
         }
     }
