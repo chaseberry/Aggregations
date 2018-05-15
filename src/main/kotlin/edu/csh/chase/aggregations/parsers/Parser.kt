@@ -1,10 +1,14 @@
 package edu.csh.chase.aggregations.parsers
 
+import edu.csh.chase.aggregations.exceptions.ParseException
+import edu.csh.chase.aggregations.exceptions.ParserException
 import edu.csh.chase.aggregations.plusAssign
 import edu.csh.chase.aggregations.toMap
 import org.bson.types.ObjectId
+import java.text.DateFormat
 import java.time.Instant
 import java.util.*
+import javax.xml.bind.DatatypeConverter
 
 class Parser(val input: String) {
 
@@ -231,7 +235,7 @@ class Parser(val input: String) {
         val s = StringBuilder()
 
         while (true) {
-            val char = getNext(false) ?: break
+            val char = getNextChar(false) ?: break
 
             if (char == '"') {//The raw value contains a '"' eg ObjectId("")
                 s += getString()
@@ -255,14 +259,24 @@ class Parser(val input: String) {
 
         Regex("^ObjectId\\((.*)\\)\$").matchEntire(v)?.let {
             return try {
-                ObjectId(it.groupValues[1])
+                val id = it.groupValues[1]
+                if (id.isEmpty()) {
+                    ObjectId()
+                } else {
+                    ObjectId(id)
+                }
             } catch (e: IllegalArgumentException) {
                 throw except(e.toString())
             }
         }
 
         Regex("^ISODate\\((.*)\\)\$").matchEntire(v)?.let {
-            return Date.from(Instant.parse(it.groupValues[1]))
+            val time = it.groupValues[1]
+            return if (time.isEmpty()) {
+                Date()
+            } else {
+                DatatypeConverter.parseDate(it.groupValues[1]).time
+            }
         }
 
         Regex("^\\/(.*)\\/\$").matchEntire(v)?.let {
@@ -330,8 +344,8 @@ class Parser(val input: String) {
     private fun Char.isControl() = this == '{' || this == '}' || this == '[' || this == ']' || this == ':'
 
     @Throws
-    private fun except(msg: String): Exception {
-        return RuntimeException("$msg: ($lineCount, $linePosition)")
+    private fun except(msg: String): ParseException {
+        return ParserException(msg, lineCount, linePosition)
     }
 
 }
