@@ -22,10 +22,20 @@ class StageParser(val input: Map<String, Any?>) {
                 "\$bucketAuto" -> parseBucketAutoStage()
                 "\$count" -> parseCountStage()
                 "\$facet" -> parseFacetStage()
+                "\$geoNear" -> parseGeoNearStage()
+                "\$graphLookup" -> parseGraphLookupStage()
                 "\$group" -> parseGroupStage()
+                "\$limit" -> parseLimitStage()
                 "\$lookup" -> parseLookupStage()
                 "\$match" -> parseMatchStage()
+                "\$out" -> parseOutStage()
                 "\$project" -> parseProjectStage()
+                "\$redact" -> parseRedactStage()
+                "\$replaceRoot" -> parseReplaceRootStage()
+                "\$sample" -> parseSampleStage()
+                "\$skip" -> parseSkipStage()
+                "\$sort" -> parseSortStage()
+                "\$sortByCount" -> parseSortByCountStage()
                 "\$unwind" -> parseUnwindStage()
                 else -> throw StageParsingException.UnknownStage(stageName)
             }
@@ -58,6 +68,8 @@ class StageParser(val input: Map<String, Any?>) {
         )
     }
 
+    private fun parseCountStage(): Count = Count(input.string("\$count"))
+
     private fun parseFacetStage() = with(getMap("\$facet")) {
         try {
             Facet(
@@ -70,29 +82,34 @@ class StageParser(val input: Map<String, Any?>) {
         }
     }
 
-    private fun parseMatchStage(): Match {
-        val map = getMap("\$match")
-
-        //TODO extra validation on stuff
-        return Match(map)
-    }
-
-    private fun parseProjectStage(): Project {
-        val map = getMap("\$project")
-
-        //TODO extra validation on stuff
-        return Project(map)
-    }
-
-    private fun parseUnwindStage(): Unwind = with(getMap("\$unwind")) {
-        Unwind(
-            path = string("path"),
-            includeArrayIndex = opString("includeArrayIndex"),
-            preserveNullAndEmptyArrays = opBoolean("preserveNullAndEmptyArrays")
+    private fun parseGeoNearStage() = with(getMap("\$geoNear")) {
+        GeoNear(
+            spherical = boolean("spherical"),
+            limit = opInt("limit"),
+            num = opInt("num"),
+            maxDistance = opDouble("maxDistance"),
+            minDistance = opDouble("minDistance"),
+            query = opDoc("query"),
+            distanceMultiplier = opDouble("distanceMultiplier"),
+            uniqueDocs = opBoolean("uniqueDocs"),
+            near = nonNull("near")!!,
+            distanceField = string("distanceField"),
+            includeLocs = opString("includeLocs")
         )
     }
 
-    private fun parseCountStage(): Count = Count(input.string("\$count"))
+    private fun parseGraphLookupStage() = with(getMap("\$graphLookup")) {
+        GraphLookup(
+            from = string("from"),
+            startWith = get("startWith"),
+            connectFromField = string("connectFromField"),
+            connectToField = string("connectToField"),
+            `as` = string("as"),
+            maxDepth = opInt("maxDepth"),
+            restrictSearchWithMatch = opDoc("restrictSearchWithMatch"),
+            depthField = opString("depthField")
+        )
+    }
 
     private fun parseGroupStage(): Group = with(getMap("\$group")) {
         Group(
@@ -100,6 +117,8 @@ class StageParser(val input: Map<String, Any?>) {
             fields = Document(this - "_id")
         )
     }
+
+    private fun parseLimitStage(): Limit = Limit(input.int("\$limit"))
 
     private fun parseLookupStage(): Stage {
         val map = getMap("\$lookup")
@@ -130,6 +149,50 @@ class StageParser(val input: Map<String, Any?>) {
         foreignField = map.string("foreignField"),
         `as` = map.string("as")
     )
+
+    private fun parseMatchStage(): Match {
+        val map = getMap("\$match")
+
+        //TODO extra validation on stuff
+        return Match(map)
+    }
+
+    private fun parseOutStage(): Out = Out(input.string("\$out"))
+
+    private fun parseProjectStage(): Project {
+        val map = getMap("\$project")
+
+        //TODO extra validation on stuff
+        return Project(map)
+    }
+
+    private fun parseRedactStage(): Redact = Redact(input.nonNull("\$redact")!!)
+
+    private fun parseReplaceRootStage(): ReplaceRoot = with(getMap("\$replaceRoot")) {
+        ReplaceRoot(
+            newRoot = string("newRoot")
+        )
+    }
+
+    private fun parseSampleStage(): Sample = with(getMap("\$sample")) {
+        Sample(
+            size = int("size")
+        )
+    }
+
+    private fun parseSkipStage(): Skip = Skip(input.int("\$skip"))
+
+    private fun parseSortStage(): Sort = Sort(input.doc("\$sort"))
+
+    private fun parseSortByCountStage(): SortByCount = SortByCount(input.nonNull("\$sortByCount")!!)
+
+    private fun parseUnwindStage(): Unwind = with(getMap("\$unwind")) {
+        Unwind(
+            path = string("path"),
+            includeArrayIndex = opString("includeArrayIndex"),
+            preserveNullAndEmptyArrays = opBoolean("preserveNullAndEmptyArrays")
+        )
+    }
 
     private fun getMap(stage: String): Map<String, Any?> {
         val doc = input[stage]
