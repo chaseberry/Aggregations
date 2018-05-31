@@ -3,7 +3,7 @@ package edu.csh.chase.aggregations.stages
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
 
-abstract class Stage(val name: String = "") {
+abstract class Stage(val name: String) {
 
     protected open fun renderSelf(depth: Int, settings: RenderSettings): String = "${settings.documentHeader}${settings.documentCloser}"
 

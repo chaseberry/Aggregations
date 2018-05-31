@@ -1,3 +1,79 @@
-{
-    key: "",
-}
+
+	[
+		
+		{
+			$match: {
+			    hospitalId: ObjectId("5a5ceda253a2bbb5717bf666"),
+			    alertTime: { "$gte": ISODate("2018-01-08T00:00:00Z") }
+			}
+		},
+
+		
+		{
+			$lookup: {
+			    "from" : "jobs",
+			    "localField" : "jobId",
+			    "foreignField" : "_id",
+			    "as" : "job"
+			}
+		},
+
+		
+		{
+			$unwind: {
+			    path : "$job",
+			}
+		},
+
+		
+		{
+			$group: {
+			    _id: "$job.agencyId",
+			    patientCount: { "$sum" : 1 }
+			}
+		},
+
+		
+		{
+			$match: {
+				_id: {$ne: null}
+			}
+		},
+
+		
+		{
+			$lookup: {
+				from: "jobs",
+				let: {
+					id: "$_id"
+				},
+				pipeline:[
+					{
+						$match: {
+							$expr: {
+								$eq: ["$agencyId", "$$id"]
+							},
+							ts: { "$gte": ISODate("2018-01-08T00:00:00Z") },
+			      			priority: /1|2/,
+			      			expires: { "$ne": "never" },
+			      			"type.type": "ems"
+						}
+					},
+					{
+						$count: "count"
+					}
+				],
+				as: "jobCount"
+			}
+		},
+
+		
+		{
+			$project: {
+			    _id: 1,
+			    patientCount: 1,
+			    jobCount: { $arrayElemAt: ["$jobCount.count", 0] }
+			}
+		},
+
+	]

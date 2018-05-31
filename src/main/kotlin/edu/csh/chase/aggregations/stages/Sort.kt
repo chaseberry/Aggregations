@@ -3,7 +3,7 @@ package edu.csh.chase.aggregations.stages
 import edu.csh.chase.aggregations.doc
 import org.bson.Document
 
-class Sort(val document: Document)  : Stage(){
+class Sort(val document: Document) : Stage("\$sort") {
 
     constructor(vararg pairs: Pair<String, Int>) : this(doc(*pairs))
 

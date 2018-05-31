@@ -12,5 +12,5 @@ class GeoNear(val distanceField: String,
               val num: Int?,
               val query: Document?,
               val uniqueDocs: Boolean?,
-              val spherical: Boolean) : Stage() {
+              val spherical: Boolean) : Stage("\$geoNear") {
 }

@@ -5,5 +5,5 @@ import org.bson.Document
 class Bucket(val groupBy: String,
              val boundaries: List<*>,
              val default: Any?,
-             val output: Document?) : Stage() {
+             val output: Document?) : Stage("\$bucket") {
 }
