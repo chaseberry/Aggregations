@@ -8,4 +8,4 @@ operator fun StringBuilder.plusAssign(a: Any?) {
     this.append(a)
 }
 
-fun <T> List<Pair<String, T>>.toMap() = this.associate{it}
+fun <T> List<Pair<String, T>>.toMap() = this.associate { it }
