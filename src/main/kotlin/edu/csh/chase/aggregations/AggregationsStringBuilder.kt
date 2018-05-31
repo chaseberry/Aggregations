@@ -19,12 +19,21 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
         }
     }
 
-    fun writeKey(key: String) {//TODO quote if quoted
-        interalBuilder += settings.keyMod?.invoke(key) ?: key
+    fun writeKey(key: String) {
+        val key = (settings.keyMod?.invoke(key) ?: key)
+        interalBuilder += if (settings.quoteKeys || "." in key) {
+            quote(key)
+        } else {
+            key
+        }
     }
 
     fun writeValue(value: Any?) {//TODO if String quote
-        interalBuilder += settings.valueMod?.invoke(value) ?: value
+        val v = settings.valueMod?.invoke(value) ?: value
+        interalBuilder += when (v) {
+            is String -> quote(v)
+            else -> v
+        }
     }
 
     override fun toString(): String {
