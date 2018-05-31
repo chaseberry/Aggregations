@@ -20,6 +20,12 @@ fun <K, V> Map<K, V>.opInt(key: K): Int? = get(key)?.let {
 }
 
 
+fun <K, V> Map<K, V>.double(key: K): Double = key.toString() to nonNull(key) assertType Double::class
+fun <K, V> Map<K, V>.opDouble(key: K): Double? = get(key)?.let {
+    key.toString() to it assertType Double::class
+}
+
+
 fun <K, V> Map<K, V>.string(key: K): String = key.toString() to nonNull(key) assertType String::class
 fun <K, V> Map<K, V>.opString(key: K): String? = get(key)?.let {
     key.toString() to it assertType String::class
