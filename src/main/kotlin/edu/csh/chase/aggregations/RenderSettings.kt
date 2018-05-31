@@ -8,6 +8,6 @@ class RenderSettings(val trailingCommas: Boolean,
                      val keyValueSeperator: String,
                      val indentationSize: Int,
                      val quoteKeys: Boolean,
-                     val keyMod: ((String) -> String)?,
-                     val valueMod: ((Any?) -> Any?)?) {
+                     val keyMod: ((String) -> String)? = null,
+                     val valueMod: ((Any?) -> Any?)? = null) {
 }

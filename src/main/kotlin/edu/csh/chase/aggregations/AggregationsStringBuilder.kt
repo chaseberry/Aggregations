@@ -14,7 +14,7 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
     }
 
     fun indent(depth: Int) {
-        for (noOp in 0..(settings.indentationSize * depth)) {
+        for (noOp in 1..(settings.indentationSize * depth)) {
             interalBuilder.append(' ')
         }
     }
@@ -25,6 +25,10 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
 
     fun writeValue(value: Any?) {//TODO if String quote
         interalBuilder += settings.valueMod?.invoke(value) ?: value
+    }
+
+    override fun toString(): String {
+        return interalBuilder.toString()
     }
 
 }

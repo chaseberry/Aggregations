@@ -3,7 +3,9 @@ package edu.csh.chase.aggregations.stages
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
 
-class Unwind(val path: String, val includeArrayIndex: String?, val preserveNullAndEmptyArrays: Boolean?) : Stage("\$unwind") {
+class Unwind(val path: String,
+             val includeArrayIndex: String? = null,
+             val preserveNullAndEmptyArrays: Boolean? = null) : Stage("\$unwind") {
 
     override fun renderSelf(depth: Int, settings: RenderSettings): String {
         val s = AggregationsStringBuilder(settings)

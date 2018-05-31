@@ -1,9 +1,31 @@
 package edu.csh.chase.aggregations
 
-import java.io.File
+import edu.csh.chase.aggregations.stages.Unwind
 
 fun main(args: Array<String>) {
 
-    println(Parser(File("/Users/chase/Code/aggregations/src/main/kotlin/edu/csh/chase/aggregations/test.txt").readText()).parse())
+    val aggregation = Aggregation(
+        collection = "test",
+        pipeline = Pipeline(
+            stages = listOf(
+                Unwind(
+                    path = "\$test"
+                )
+            )
+        )
+    )
+
+    val shellSettings = RenderSettings(
+        documentHeader = "{",
+        documentCloser = "}",
+        keyValueSeperator = ":",
+        listHeader = "[",
+        listCloser = "]",
+        trailingCommas = true,
+        quoteKeys = false,
+        indentationSize = 4
+    )
+
+    println(AggregationRender(aggregation, shellSettings).render())
 
 }

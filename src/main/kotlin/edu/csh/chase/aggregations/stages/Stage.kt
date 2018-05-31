@@ -3,9 +3,9 @@ package edu.csh.chase.aggregations.stages
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
 
-abstract class Stage(val name: String) {
+abstract class Stage(val name: String = "") {
 
-    protected abstract fun renderSelf(depth: Int, settings: RenderSettings): String
+    protected open fun renderSelf(depth: Int, settings: RenderSettings): String = "${settings.documentHeader}${settings.documentCloser}"
 
     fun render(depth: Int, settings: RenderSettings): String {
         val s = AggregationsStringBuilder(settings)
@@ -16,9 +16,9 @@ abstract class Stage(val name: String) {
         s.nl(depth + 1)
 
         s.writeKey(name)
-        s += " ${settings.keyValueSeperator} ${render(depth + 2, settings)}"
+        s += " ${settings.keyValueSeperator} ${renderSelf(depth + 1, settings)}"
 
-        s.nl(depth + 1)
+        s.nl(depth)
         s += settings.documentCloser
 
         return s.toString()
