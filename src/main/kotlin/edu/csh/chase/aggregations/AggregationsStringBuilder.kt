@@ -1,5 +1,8 @@
 package edu.csh.chase.aggregations
 
+import edu.csh.chase.aggregations.utils.plusAssign
+import edu.csh.chase.aggregations.utils.quote
+
 class AggregationsStringBuilder(val settings: RenderSettings) {
 
     private val interalBuilder = StringBuilder()

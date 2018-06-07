@@ -1,6 +1,6 @@
 package edu.csh.chase.aggregations.stages
 
-import edu.csh.chase.aggregations.doc
+import edu.csh.chase.aggregations.utils.doc
 import org.bson.Document
 
 class Project(val document: Document) : Stage("\$project") {

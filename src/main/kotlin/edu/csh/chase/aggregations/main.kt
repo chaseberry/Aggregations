@@ -1,5 +1,6 @@
 package edu.csh.chase.aggregations
 
+import edu.csh.chase.aggregations.aggregation.Aggregation
 import edu.csh.chase.aggregations.stages.Unwind
 
 fun main(args: Array<String>) {
@@ -23,9 +24,9 @@ fun main(args: Array<String>) {
         listCloser = "]",
         trailingCommas = true,
         quoteKeys = false,
-        indentationSize = 4
+        indentationSize = 2
     )
 
-    println(AggregationRender(aggregation, shellSettings).render())
+    //println(AggregationRender(aggregation, shellSettings).render())
 
 }

@@ -1,5 +1,7 @@
 package edu.csh.chase.aggregations
 
+import edu.csh.chase.aggregations.aggregation.Aggregation
+
 class AggregationRender(val aggregation: Aggregation, val settings: RenderSettings) {
 
     fun render(): String {

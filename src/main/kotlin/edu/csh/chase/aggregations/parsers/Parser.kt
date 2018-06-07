@@ -2,11 +2,9 @@ package edu.csh.chase.aggregations.parsers
 
 import edu.csh.chase.aggregations.exceptions.ParseException
 import edu.csh.chase.aggregations.exceptions.ParserException
-import edu.csh.chase.aggregations.plusAssign
-import edu.csh.chase.aggregations.toMap
+import edu.csh.chase.aggregations.utils.plusAssign
+import edu.csh.chase.aggregations.utils.toMap
 import org.bson.types.ObjectId
-import java.text.DateFormat
-import java.time.Instant
 import java.util.*
 import javax.xml.bind.DatatypeConverter
 
