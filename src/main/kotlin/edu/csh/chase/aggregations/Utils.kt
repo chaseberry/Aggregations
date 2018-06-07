@@ -17,30 +17,23 @@ fun quote(string: String): String {
 
     val w = StringBuilder()
 
-    w.append("\"")
+    w += '"'
+
     for (z in string.indices) {
         val c = string[z]//current
-        when (c) {
-            '\\' -> w.append("\\\\")
-            '"' -> w.append("\\\"")
-            '\b' -> w.append("\\b")
-            '\t' -> w.append("\\t")
-            '\n' -> w.append("\\n")
-            '\u000C' -> w.append("\\f")
-            '\r' -> w.append("\\r")
-            else -> {
-                if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
-                    || (c >= '\u2000' && c < '\u2100')) {
-                    w.append("\\u")
-                    val hhhh = Integer.toHexString(c.toInt())
-                    w.append("0000", 0, 4 - hhhh.length)
-                    w.append(hhhh)
-                } else {
-                    w.append(c.toString())
-                }
-            }
+        w += when (c) {
+            '\\' -> "\\\\"
+            '"' -> "\\\""
+            '\b' -> "\\b"
+            '\t' -> "\\t"
+            '\n' -> "\\n"
+            '\u000C' -> "\\f"
+            '\r' -> "\\r"
+            else -> c
         }
     }
-    w.append("\"")
+
+    w += '"'
+
     return w.toString()
 }
