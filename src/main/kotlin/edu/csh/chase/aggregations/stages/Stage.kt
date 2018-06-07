@@ -16,7 +16,7 @@ abstract class Stage(val name: String) {
         s.nl(depth + 1)
 
         s.writeKey(name)
-        s += " ${settings.keyValueSeperator} ${renderSelf(depth + 1, settings)}"
+        s += "${settings.keyValueSeperator}${renderSelf(depth + 1, settings)}"
 
         s.nl(depth)
         s += settings.documentCloser

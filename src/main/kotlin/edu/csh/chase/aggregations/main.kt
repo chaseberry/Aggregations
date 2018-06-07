@@ -1,7 +1,9 @@
 package edu.csh.chase.aggregations
 
 import edu.csh.chase.aggregations.aggregation.Aggregation
+import edu.csh.chase.aggregations.stages.Match
 import edu.csh.chase.aggregations.stages.Unwind
+import edu.csh.chase.aggregations.utils.doc
 
 fun main(args: Array<String>) {
 
@@ -19,13 +21,20 @@ fun main(args: Array<String>) {
     val shellSettings = RenderSettings(
         documentHeader = "{",
         documentCloser = "}",
-        keyValueSeperator = ":",
+        keyValueSeperator = " : ",
         listHeader = "[",
         listCloser = "]",
         trailingCommas = true,
         quoteKeys = false,
         indentationSize = 2
     )
+
+    val match = Match(
+        "key" to "value",
+        "key2" to doc("\$gte" to 10)
+    )
+
+    println(match.render(0, shellSettings))
 
     //println(AggregationRender(aggregation, shellSettings).render())
 

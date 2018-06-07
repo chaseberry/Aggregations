@@ -39,6 +39,16 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
         }
     }
 
+    private fun writeMap(map: Map<*, *>, depth: Int) {
+        with(settings){
+
+        }
+    }
+
+    private fun writeList(lst: List<*>, depth: Int) {
+
+    }
+
     override fun toString(): String {
         return interalBuilder.toString()
     }

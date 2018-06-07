@@ -22,7 +22,7 @@ class Unwind(val path: String,
 
         for (z in fields.indices) {
             s.writeKey(fields[z].first)
-            s += " ${settings.keyValueSeperator} "
+            s += settings.keyValueSeperator
             s.writeValue(fields[z].second)
 
             if (z != fields.lastIndex || settings.trailingCommas) {
