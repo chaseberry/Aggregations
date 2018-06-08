@@ -31,21 +31,48 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
         }
     }
 
-    fun writeValue(value: Any?) {//TODO if String quote
+    fun writeValue(value: Any?, depth: Int) {//TODO if String quote
         val v = settings.valueMod?.invoke(value) ?: value
         interalBuilder += when (v) {
             is String -> quote(v)
+            is Map<*, *> -> return writeMap(v, depth)
             else -> v
         }
     }
 
-    private fun writeMap(map: Map<*, *>, depth: Int) {
-        with(settings){
+    fun writeMap(map: Map<*, *>, depth: Int) {
+        with(settings) {
 
+            interalBuilder += documentHeader
+
+            nl(depth + 1)
+
+            val fields = map.toList()
+
+            for (z in fields.indices) {
+
+                writeKey(fields[z].first.toString())
+
+                interalBuilder += keyValueSeperator
+
+                writeValue(fields[z].second, depth)
+
+                if (z != fields.lastIndex || settings.trailingCommas) {
+                    interalBuilder += ","
+                }
+
+                if (z != fields.lastIndex) {
+                    nl(depth + 1)
+                }
+
+            }
+
+            nl(depth)
+            interalBuilder += documentCloser
         }
     }
 
-    private fun writeList(lst: List<*>, depth: Int) {
+    fun writeList(lst: List<*>, depth: Int) {
 
     }
 
