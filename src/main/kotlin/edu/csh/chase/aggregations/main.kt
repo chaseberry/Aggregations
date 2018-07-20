@@ -31,7 +31,8 @@ fun main(args: Array<String>) {
 
     val match = Match(
         "key" to "value",
-        "key2" to doc("\$gte" to 10)
+        "key2" to doc("\$gte" to 10),
+        "list" to listOf(1,2,3,4,5,"apple pie")
     )
 
     println(match.render(0, shellSettings))

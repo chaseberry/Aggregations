@@ -36,6 +36,7 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
         interalBuilder += when (v) {
             is String -> quote(v)
             is Map<*, *> -> return writeMap(v, depth)
+            is List<*> -> return writeList(v, depth)
             else -> v
         }
     }
@@ -55,7 +56,7 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
 
                 interalBuilder += keyValueSeperator
 
-                writeValue(fields[z].second, depth)
+                writeValue(fields[z].second, depth + 1)
 
                 if (z != fields.lastIndex || settings.trailingCommas) {
                     interalBuilder += ","
@@ -73,7 +74,30 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
     }
 
     fun writeList(lst: List<*>, depth: Int) {
+        with(settings) {
 
+            interalBuilder += listHeader
+
+            nl(depth + 1)
+
+            for (z in lst.indices) {
+
+                writeValue(lst[z], depth + 1)
+
+                if (z != lst.lastIndex || settings.trailingCommas) {
+                    interalBuilder += ","
+                }
+
+                if (z != lst.lastIndex) {
+                    nl(depth + 1)
+                }
+
+            }
+
+            nl(depth)
+            interalBuilder += listCloser
+
+        }
     }
 
     override fun toString(): String {
