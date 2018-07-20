@@ -10,35 +10,13 @@ class Unwind(val path: String,
     override fun renderSelf(depth: Int, settings: RenderSettings): String {
         val s = AggregationsStringBuilder(settings)
 
-        s += settings.documentHeader
-
-        s.nl(depth + 1)
-
-        val fields = listOf(
+        val fields = mapOf(
             "path" to path,
             "includeArrayIndex" to includeArrayIndex,
             "preserveNullAndEmptyArrays" to preserveNullAndEmptyArrays
-        ).filter { it.second != null }
+        ).filter { it.value != null }
 
-        for (z in fields.indices) {
-            s.writeKey(fields[z].first)
-            s += settings.keyValueSeperator
-            s.writeValue(fields[z].second, depth)
-
-            if (z != fields.lastIndex || settings.trailingCommas) {
-                s += ","
-            }
-
-            if (z != fields.lastIndex) {
-                s.nl(depth + 1)
-            }
-
-        }
-
-
-
-        s.nl(depth)
-        s += settings.documentCloser
+        s.writeValue(fields, depth)
 
         return s.toString()
     }
