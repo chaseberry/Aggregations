@@ -1,6 +1,7 @@
 package edu.csh.chase.aggregations
 
 import edu.csh.chase.aggregations.aggregation.Aggregation
+import edu.csh.chase.aggregations.stages.Limit
 import edu.csh.chase.aggregations.stages.Match
 import edu.csh.chase.aggregations.stages.Unwind
 import edu.csh.chase.aggregations.utils.doc
@@ -35,7 +36,7 @@ fun main(args: Array<String>) {
         "list" to listOf(1,2,3,4,5,"apple pie")
     )
 
-    println(match.render(0, shellSettings))
+    println(Limit(5).render(0, shellSettings))
 
     //println(AggregationRender(aggregation, shellSettings).render())
 
