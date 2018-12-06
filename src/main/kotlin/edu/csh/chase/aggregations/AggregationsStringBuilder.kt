@@ -1,5 +1,6 @@
 package edu.csh.chase.aggregations
 
+import edu.csh.chase.aggregations.stages.Stage
 import edu.csh.chase.aggregations.utils.plusAssign
 import edu.csh.chase.aggregations.utils.quote
 
@@ -35,6 +36,8 @@ class AggregationsStringBuilder(val settings: RenderSettings) {
         val v = settings.valueMod?.invoke(value) ?: value
         interalBuilder += when (v) {
             is String -> quote(v)
+            is Stage -> v.render(settings, depth)
+            is Pipeline -> return writeList(v.stages, depth)
             is Map<*, *> -> return writeMap(v, depth)
             is List<*> -> return writeList(v, depth)
             else -> v

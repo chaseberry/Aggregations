@@ -16,7 +16,7 @@ class AggregationRender(val aggregation: Aggregation, val settings: RenderSettin
 
         s += "\n"
 
-        val stages = aggregation.pipeline.stages.map { it.render(2, settings) }
+        val stages = aggregation.pipeline.stages.map { it.render(settings, 2) }
 
         for (z in stages.indices) {
             s += stages[z]

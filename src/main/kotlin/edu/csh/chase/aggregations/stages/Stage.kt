@@ -7,10 +7,9 @@ abstract class Stage(val name: String) {
 
     protected open fun renderSelf(depth: Int, settings: RenderSettings): String = "${settings.documentHeader}${settings.documentCloser}"
 
-    fun render(depth: Int, settings: RenderSettings): String {
+    fun render(settings: RenderSettings, depth: Int = 0): String {
         val s = AggregationsStringBuilder(settings)
 
-        s.indent(depth)
         s += settings.documentHeader
 
         s.nl(depth + 1)

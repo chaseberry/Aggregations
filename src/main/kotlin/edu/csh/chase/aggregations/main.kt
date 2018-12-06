@@ -1,9 +1,7 @@
 package edu.csh.chase.aggregations
 
 import edu.csh.chase.aggregations.aggregation.Aggregation
-import edu.csh.chase.aggregations.stages.Limit
-import edu.csh.chase.aggregations.stages.Match
-import edu.csh.chase.aggregations.stages.Unwind
+import edu.csh.chase.aggregations.stages.*
 import edu.csh.chase.aggregations.utils.doc
 
 fun main(args: Array<String>) {
@@ -33,10 +31,18 @@ fun main(args: Array<String>) {
     val match = Match(
         "key" to "value",
         "key2" to doc("\$gte" to 10),
-        "list" to listOf(1,2,3,4,5,"apple pie")
+        "list" to listOf(1, 2, 3, 4, 5, "apple pie")
     )
 
-    println(Limit(5).render(0, shellSettings))
+    val facet = Facet(
+        facets = mapOf(
+            "match" to Pipeline(listOf(match, Limit(5))
+            ),
+            "idk" to Pipeline(listOf(Limit(5), Count("count")))
+        )
+    )
+
+    println(facet.render(shellSettings))
 
     //println(AggregationRender(aggregation, shellSettings).render())
 
