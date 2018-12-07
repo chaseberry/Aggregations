@@ -1,5 +1,6 @@
 package edu.csh.chase.aggregations.utils
 
+import edu.csh.chase.aggregations.RenderSettings
 import org.bson.Document
 
 fun doc(vararg pairs: Pair<String, Any?>): Document = Document(mapOf(*pairs))
@@ -36,4 +37,12 @@ fun quote(string: String): String {
     w += '"'
 
     return w.toString()
+}
+
+fun Map<String, Any?>.removeNulls(settings: RenderSettings) = this.filter {
+    if (settings.includeNullValues) {
+        true
+    } else {
+        it.value != null
+    }
 }

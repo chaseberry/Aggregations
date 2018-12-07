@@ -2,6 +2,7 @@ package edu.csh.chase.aggregations.stages
 
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
+import edu.csh.chase.aggregations.utils.removeNulls
 
 class Unwind(val path: String,
              val includeArrayIndex: String? = null,
@@ -14,7 +15,7 @@ class Unwind(val path: String,
             "path" to path,
             "includeArrayIndex" to includeArrayIndex,
             "preserveNullAndEmptyArrays" to preserveNullAndEmptyArrays
-        ).filter { it.value != null }
+        ).removeNulls(settings)
 
         s.writeValue(fields, depth)
 

@@ -1,5 +1,8 @@
 package edu.csh.chase.aggregations.stages
 
+import edu.csh.chase.aggregations.AggregationsStringBuilder
+import edu.csh.chase.aggregations.RenderSettings
+import edu.csh.chase.aggregations.utils.removeNulls
 import org.bson.Document
 
 class GeoNear(val distanceField: String,
@@ -11,6 +14,30 @@ class GeoNear(val distanceField: String,
               val near: Any,
               val num: Int?,
               val query: Document?,
-              val uniqueDocs: Boolean?,
-              val spherical: Boolean) : Stage("\$geoNear") {
+              val spherical: Boolean,
+              val uniqueDocs: Boolean?) : Stage("\$geoNear") {
+
+    override fun renderSelf(depth: Int, settings: RenderSettings): String {
+        val s = AggregationsStringBuilder(settings)
+
+        s.writeMap(
+            map = mapOf(
+                "distanceField" to distanceField,
+                "distanceMultiplier" to distanceMultiplier,
+                "includeLocs" to includeLocs,
+                "limit" to limit,
+                "maxDistance" to maxDistance,
+                "minDistance" to minDistance,
+                "near" to near,
+                "num" to num,
+                "query" to query,
+                "spherical" to spherical,
+                "uniqueDocs" to uniqueDocs
+            ).removeNulls(settings),
+            depth = depth
+        )
+
+        return s.toString()
+    }
+
 }

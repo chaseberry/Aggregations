@@ -25,6 +25,7 @@ fun main(args: Array<String>) {
         listCloser = "]",
         trailingCommas = true,
         quoteKeys = false,
+        includeNullValues = false,
         indentationSize = 2
     )
 
