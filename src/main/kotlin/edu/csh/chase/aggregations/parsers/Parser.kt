@@ -282,7 +282,7 @@ class Parser(val input: String) {
             }
         }
 
-        Regex("^\\/(.*)\\/\$").matchEntire(v)?.let {
+        Regex("^/(.*)/\$").matchEntire(v)?.let {
             return Regex(it.groupValues[1])
         }
 
