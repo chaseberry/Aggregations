@@ -23,4 +23,10 @@ class Group(val _id: Any?, val fields: Document) : Stage("\$group") {
         return s.toString()
     }
 
+    override fun internalBson(): Any? {
+        return doc(
+            "_id" to _id
+        ).putAll(fields)
+    }
+
 }

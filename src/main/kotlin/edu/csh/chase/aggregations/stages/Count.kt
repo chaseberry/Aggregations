@@ -8,4 +8,8 @@ class Count(val field: String) : Stage("\$count") {
         return field
     }
 
+    override fun internalBson(): Any? {
+        return field
+    }
+
 }

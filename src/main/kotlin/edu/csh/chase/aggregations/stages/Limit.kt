@@ -8,4 +8,8 @@ class Limit(val limit: Int) : Stage("\$limit") {
         return limit.toString()
     }
 
+    override fun internalBson(): Any? {
+        return limit
+    }
+
 }

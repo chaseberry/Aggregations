@@ -2,6 +2,7 @@ package edu.csh.chase.aggregations.stages
 
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
+import edu.csh.chase.aggregations.utils.doc
 
 class Lookup(val from: String,
              val localField: String,
@@ -22,6 +23,15 @@ class Lookup(val from: String,
         )
 
         return s.toString()
+    }
+
+    override fun internalBson(): Any? {
+        return doc(
+            "from" to from,
+            "localField" to localField,
+            "foreignField" to foreignField,
+            "as" to `as`
+        )
     }
 
 }

@@ -5,6 +5,8 @@ import org.bson.Document
 
 fun doc(vararg pairs: Pair<String, Any?>): Document = Document(mapOf(*pairs))
 
+fun docNotNull(vararg pairs: Pair<String, Any?>): Document = Document(mapOf(*(pairs.filter { it.second != null }).toTypedArray()))
+
 operator fun StringBuilder.plusAssign(a: Any?) {
     this.append(a)
 }
