@@ -18,5 +18,7 @@ enum class MongoType(val number: Int) {
     long(18),
     decimal(19),
     minKey(-1),
-    maxKey(127),
+    maxKey(127);
+
+    fun type(): Type = Type(this)
 }
