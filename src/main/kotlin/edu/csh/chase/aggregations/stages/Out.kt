@@ -8,4 +8,8 @@ class Out(val collection: String) : Stage("\$out") {
         return collection
     }
 
+    override fun internalBson(): Any? {
+        return collection
+    }
+
 }

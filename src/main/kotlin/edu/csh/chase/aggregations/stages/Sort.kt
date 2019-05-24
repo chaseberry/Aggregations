@@ -7,4 +7,8 @@ class Sort(val document: Document) : Stage("\$sort") {
 
     constructor(vararg pairs: Pair<String, Int>) : this(doc(*pairs))
 
+    override fun internalBson(): Any? {
+        return document
+    }
+
 }

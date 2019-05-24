@@ -5,8 +5,9 @@ import edu.csh.chase.aggregations.exceptions.ParserException
 import edu.csh.chase.aggregations.utils.plusAssign
 import edu.csh.chase.aggregations.utils.toMap
 import org.bson.types.ObjectId
+import java.text.SimpleDateFormat
 import java.util.*
-import javax.xml.bind.DatatypeConverter
+
 
 class Parser(val input: String) {
 
@@ -117,7 +118,7 @@ class Parser(val input: String) {
                 throw except("Keys cannot contain newline")
             }
 
-            if(c.isControl()){
+            if (c.isControl()) {
                 throw except("Unquoted keys must terminate with a ':'")
             }
 
@@ -277,11 +278,11 @@ class Parser(val input: String) {
             return if (time.isEmpty()) {
                 Date()
             } else {
-                DatatypeConverter.parseDate(it.groupValues[1]).time
+                SimpleDateFormat().parse(it.groupValues[1])
             }
         }
 
-        Regex("^\\/(.*)\\/\$").matchEntire(v)?.let {
+        Regex("^/(.*)/\$").matchEntire(v)?.let {
             return Regex(it.groupValues[1])
         }
 

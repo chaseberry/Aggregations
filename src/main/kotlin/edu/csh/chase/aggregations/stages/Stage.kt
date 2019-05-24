@@ -2,6 +2,8 @@ package edu.csh.chase.aggregations.stages
 
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
+import edu.csh.chase.aggregations.utils.doc
+import org.bson.conversions.Bson
 
 abstract class Stage(val name: String) {
 
@@ -22,4 +24,12 @@ abstract class Stage(val name: String) {
 
         return s.toString()
     }
+
+    fun toBson(): Bson {
+        return doc(
+            name to internalBson()
+        )
+    }
+
+    protected abstract fun internalBson(): Any?
 }

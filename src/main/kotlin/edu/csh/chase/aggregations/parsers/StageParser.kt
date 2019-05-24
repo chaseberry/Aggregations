@@ -92,7 +92,7 @@ class StageParser(val input: Map<String, Any?>) {
             query = opDoc("query"),
             distanceMultiplier = opDouble("distanceMultiplier"),
             uniqueDocs = opBoolean("uniqueDocs"),
-            near = nonNull("near")!!,
+            near = nonNull("near"),
             distanceField = string("distanceField"),
             includeLocs = opString("includeLocs")
         )
@@ -166,11 +166,11 @@ class StageParser(val input: Map<String, Any?>) {
         return Project(map)
     }
 
-    private fun parseRedactStage(): Redact = Redact(input.nonNull("\$redact")!!)
+    private fun parseRedactStage(): Redact = Redact(input.nonNull("\$redact"))
 
     private fun parseReplaceRootStage(): ReplaceRoot = with(getMap("\$replaceRoot")) {
         ReplaceRoot(
-            newRoot = string("newRoot")
+            newRoot = nonNull("newRoot")
         )
     }
 
@@ -184,7 +184,7 @@ class StageParser(val input: Map<String, Any?>) {
 
     private fun parseSortStage(): Sort = Sort(input.doc("\$sort"))
 
-    private fun parseSortByCountStage(): SortByCount = SortByCount(input.nonNull("\$sortByCount")!!)
+    private fun parseSortByCountStage(): SortByCount = SortByCount(input.nonNull("\$sortByCount"))
 
     private fun parseUnwindStage(): Unwind = with(getMap("\$unwind")) {
         Unwind(

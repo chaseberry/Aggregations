@@ -2,6 +2,7 @@ package edu.csh.chase.aggregations.stages
 
 import edu.csh.chase.aggregations.AggregationsStringBuilder
 import edu.csh.chase.aggregations.RenderSettings
+import edu.csh.chase.aggregations.utils.docNotNull
 import edu.csh.chase.aggregations.utils.removeNulls
 import org.bson.Document
 
@@ -38,6 +39,22 @@ class GeoNear(val distanceField: String,
         )
 
         return s.toString()
+    }
+
+    override fun internalBson(): Any? {
+        return docNotNull(
+            "distanceField" to distanceField,
+            "distanceMultiplier" to distanceMultiplier,
+            "includeLocs" to includeLocs,
+            "limit" to limit,
+            "maxDistance" to maxDistance,
+            "minDistance" to minDistance,
+            "near" to near,
+            "num" to num,
+            "query" to query,
+            "spherical" to spherical,
+            "uniqueDocs" to uniqueDocs
+        )
     }
 
 }

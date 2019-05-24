@@ -19,4 +19,8 @@ class Match(val document: Document) : Stage("\$match") {
         return s.toString()
     }
 
+    override fun internalBson(): Any? {
+        return document
+    }
+
 }
